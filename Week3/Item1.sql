@@ -1,6 +1,5 @@
+
 -- WEEK 3 ITEM 1 --
-
-
 
 /* 
 a. Chef – show me the salary of each chef listed in the table. Ensure this salary is displayed
