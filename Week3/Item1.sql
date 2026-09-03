@@ -91,6 +91,7 @@ GO
 e. Show me the reservations and how many patrons receive their favorite table and those
 that don’t.
 */
+-- Cody
 CREATE FUNCTION dbo.fn_ReservationFavoriteTable()
 RETURNS TABLE
 AS
