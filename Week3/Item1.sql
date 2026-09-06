@@ -6,19 +6,23 @@ a. Chef – show me the salary of each chef listed in the table. Ensure this sal
 correctly as the Irish pound. Do NOT hardcode the euro dollar sign.
 */
 
-
+select FirstName + ' ' + LastName as Name, Salary
+from Employee
+where JobTitle = 'Chef'
 
 /*
 b. Show me the kitchen details by kitchen.
 */
 
-
+select *
+from Kitchen
 
 /*
 c. Menu price – show me the unique menu items along with the price of those dishes.
 */
 
-
+select MenuItemID, ItemName, Price
+from MenuItem
 
 /*
 d. Show me the distribution of how orders are placed (in-person, online, phone). Show
