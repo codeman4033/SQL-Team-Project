@@ -1,4 +1,3 @@
-
 -- WEEK 3 ITEM 1 --
 
 USE Restaurant
@@ -9,62 +8,87 @@ a. Chef – show me the salary of each chef listed in the table. Ensure this sal
 correctly as the Irish pound. Do NOT hardcode the euro dollar sign.
 */
 
-create function fnChefSalaries()
-    returns table
-return
+GO
+
+CREATE OR ALTER FUNCTION fnChefSalaries()
+RETURNS TABLE
+AS
+RETURN
 (
-select Salary
-from Employee
-where JobTitle = 'Chef'
+SELECT format(Salary, 'C', 'en-IE') AS Salary
+FROM Employee
+WHERE JobTitle = 'Chef'
 )
-go
+
+GO
+
 -- test a.
 
-select AVG(Salary) as AvgSalary
-from dbo.fnChefSalaries()
-go
+SELECT *
+FROM dbo.fnChefSalaries()
+
+GO
+
 /*
 b. Show me the kitchen details by kitchen.
 */
 
-create function fnKitchenDetails()
-    returns table
-return
+GO
+
+CREATE OR ALTER FUNCTION fnKitchenDetails()
+RETURNS TABLE
+AS
+RETURN
 (
-select *
-from Kitchen
+SELECT *
+FROM Kitchen
 )
-go
+
+GO
+
 -- test b.
 
-select * from fnKitchenDetails()
-go
+SELECT * 
+FROM fnKitchenDetails()
+
+GO
+
 /*
 c. Menu price – show me the unique menu items along with the price of those dishes.
 */
 
-create function fnMenuItemPrice()
-    returns table
-return
+GO
+
+CREATE OR ALTER FUNCTION fnMenuItemPrice()
+RETURNS TABLE
+AS
+RETURN
 (
-select ItemName, Price
-from MenuItem
+SELECT DISTINCT ItemName, Price
+FROM MenuItem
 )
-go
+
+GO
+
 -- test c.
 
-select * from fnMenuItemPrice()
-go
+SELECT * 
+FROM fnMenuItemPrice()
+
+GO
+
 /*
 d. Show me the distribution of how orders are placed (in-person, online, phone). Show
 this as a sum of each, with an overall sum for all options.
 */
 -- Cody
 
--- Adds the order placement method to CustomerOrder.
--- OrderType remains separate because it describes how the order is fulfilled.
-ALTER TABLE CustomerOrder
-ADD OrderPlacementMethod VARCHAR(20) NULL;
+-- Makes the new field required.
+IF COL_LENGTH('CustomerOrder', 'OrderPlacementMethod') IS NULL
+BEGIN
+    ALTER TABLE CustomerOrder
+    ADD OrderPlacementMethod VARCHAR(20) NULL
+END
 GO
 
 -- Populates the existing orders with sample placement methods.
@@ -77,18 +101,21 @@ SET OrderPlacementMethod =
     END;
 GO
 
--- Makes the new field required.
-ALTER TABLE CustomerOrder
-ALTER COLUMN OrderPlacementMethod VARCHAR(20) NOT NULL;
-GO
-
 -- Prevents invalid order placement methods.
-ALTER TABLE CustomerOrder
-ADD CONSTRAINT CK_CustomerOrder_OrderPlacementMethod
-CHECK (OrderPlacementMethod IN ('In-Person', 'Online', 'Phone'));
+IF NOT EXISTS
+(
+    SELECT *
+    FROM sys.check_constraints
+    WHERE name = 'CK_CustomerOrder_OrderPlacementMethod'
+)
+BEGIN
+    ALTER TABLE CustomerOrder
+    ADD CONSTRAINT CK_CustomerOrder_OrderPlacementMethod
+    CHECK (OrderPlacementMethod IN ('In-Person', 'Online', 'Phone'));
+END
 GO
 
-CREATE FUNCTION dbo.fn_OrderPlacementDistribution()
+CREATE OR ALTER FUNCTION dbo.fn_OrderPlacementDistribution()
 RETURNS TABLE
 AS
 RETURN
@@ -127,7 +154,7 @@ e. Show me the reservations and how many patrons receive their favorite table an
 that don’t.
 */
 -- Cody
-CREATE FUNCTION dbo.fn_ReservationFavoriteTable()
+CREATE OR ALTER FUNCTION dbo.fn_ReservationFavoriteTable()
 RETURNS TABLE
 AS
 RETURN
@@ -160,5 +187,3 @@ GO
 -- Test E
 SELECT *
 FROM dbo.fn_ReservationFavoriteTable();
-GO
-
