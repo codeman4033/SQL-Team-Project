@@ -7,9 +7,19 @@ a. Chef – show me the salary of each chef listed in the table. Ensure this sal
 correctly as the Irish pound. Do NOT hardcode the euro dollar sign.
 */
 
-select FirstName + ' ' + LastName as Name, Salary
+create function fnChefSalaries()
+    returns table
+return
+(
+select Salary
 from Employee
 where JobTitle = 'Chef'
+)
+
+-- test a.
+
+select AVG(Salary) as AvgSalary
+from dbo.fnChefSalaries()
 
 /*
 b. Show me the kitchen details by kitchen.
