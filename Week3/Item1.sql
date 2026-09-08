@@ -1,6 +1,7 @@
 
 -- WEEK 3 ITEM 1 --
 
+-- Nathan
 /* 
 a. Chef – show me the salary of each chef listed in the table. Ensure this salary is displayed
 correctly as the Irish pound. Do NOT hardcode the euro dollar sign.
