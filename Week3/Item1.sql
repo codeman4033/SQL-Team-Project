@@ -1,6 +1,8 @@
 
 -- WEEK 3 ITEM 1 --
 
+USE Restaurant
+
 -- Nathan
 /* 
 a. Chef – show me the salary of each chef listed in the table. Ensure this salary is displayed
@@ -15,12 +17,12 @@ select Salary
 from Employee
 where JobTitle = 'Chef'
 )
-
+go
 -- test a.
 
 select AVG(Salary) as AvgSalary
 from dbo.fnChefSalaries()
-
+go
 /*
 b. Show me the kitchen details by kitchen.
 */
@@ -32,11 +34,11 @@ return
 select *
 from Kitchen
 )
-
+go
 -- test b.
 
 select * from fnKitchenDetails()
-
+go
 /*
 c. Menu price – show me the unique menu items along with the price of those dishes.
 */
@@ -48,11 +50,11 @@ return
 select ItemName, Price
 from MenuItem
 )
-
+go
 -- test c.
 
 select * from fnMenuItemPrice()
-
+go
 /*
 d. Show me the distribution of how orders are placed (in-person, online, phone). Show
 this as a sum of each, with an overall sum for all options.
