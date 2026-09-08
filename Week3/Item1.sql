@@ -25,8 +25,17 @@ from dbo.fnChefSalaries()
 b. Show me the kitchen details by kitchen.
 */
 
+create function fnKitchenDetails()
+    returns table
+return
+(
 select *
 from Kitchen
+)
+
+-- test b.
+
+select * from fnKitchenDetails()
 
 /*
 c. Menu price – show me the unique menu items along with the price of those dishes.
