@@ -41,8 +41,17 @@ select * from fnKitchenDetails()
 c. Menu price – show me the unique menu items along with the price of those dishes.
 */
 
-select MenuItemID, ItemName, Price
+create function fnMenuItemPrice()
+    returns table
+return
+(
+select ItemName, Price
 from MenuItem
+)
+
+-- test c.
+
+select * from fnMenuItemPrice()
 
 /*
 d. Show me the distribution of how orders are placed (in-person, online, phone). Show
