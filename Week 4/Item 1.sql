@@ -6,6 +6,7 @@
 USE Restaurant
 
 -- ITEM 1 --
+-- Develop five (5) stored procedures that will do the following:
 
 /* 
 a. Return the chef(s) that have a preferred vendor and what item(s) these chefs prefer
@@ -60,3 +61,42 @@ think is the appropriate field. Document why you made this selection. */
 perform CRUD (create/insert/update/delete) operations against those tables. This means that
 each table will have one stored procedure for each of the following tasks: */
 
+/*
+a. SELECT from
+*/
+
+/*
+b. INSERT into. It is up to you to decide what field(s) to include in the insert based on the
+requirements above.
+*/
+
+/*
+c. UPDATE – this will mean updating most fields on each table. It is up to you to decide
+what field(s) to include when updating each table. For each update, you will need to
+update at least three (3) fields.
+*/
+
+/*
+d. DELETE – this will mean deleting a record from the table. When completing this step,
+keep in mind the relationships you established in the previous step.
+*/
+
+/*
+e. Name each stored procedure with the appropriate table name and action. For example,
+if we have the table Server above, each procedure will be named as follows:
+*/
+
+-- i. SELECT – spN_GetServer
+-- ii. INSERT – spN_InsertServer
+-- iii. UPDATE – spN_UpdateServer
+-- iv. DELETE – spN_DeleteServer
+
+/*
+f. At least one stored procedure for each action (select, insert, update and delete) needs
+to have at least one parameter as part of the stored procedure.
+*/
+
+/*
+h. When each stored procedure is executed, it should not generate any exceptions and all
+should return data.
+*/
