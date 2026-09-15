@@ -6,6 +6,9 @@
 USE Restaurant
 
 -- ITEM 1 --
+
+-- Nathan Aird
+
 -- Develop five (5) stored procedures that will do the following:
 
 /* 
@@ -34,6 +37,9 @@ should be able to run and return individual customer information
 */
 
 -- ITEM 2 --
+
+-- Landon Heezen
+
 /* Develop the following indexes for the tables listed below. Foe each table, select what you
 think is the appropriate field. Document why you made this selection. */
 
@@ -57,6 +63,9 @@ think is the appropriate field. Document why you made this selection. */
 
 
 -- ITEM 3 --
+
+-- Cody Ferguson + Osman Abdirahman
+
 /* For two (2) tables above (your choice), develop stored procedures that will allow you to
 perform CRUD (create/insert/update/delete) operations against those tables. This means that
 each table will have one stored procedure for each of the following tasks: */
@@ -93,6 +102,11 @@ if we have the table Server above, each procedure will be named as follows:
 
 /*
 f. At least one stored procedure for each action (select, insert, update and delete) needs
+to have at least one parameter as part of the stored procedure.
+*/
+
+/*
+g. At least one stored procedure for each action (select, insert, update and delete) needs
 to have at least one parameter as part of the stored procedure.
 */
 
