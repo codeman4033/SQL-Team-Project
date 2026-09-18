@@ -31,6 +31,16 @@ d. Show me the kitchen details. These details can either be all records or by in
 chef.
 */
 
+create or alter procedure spN_KitchenDetails
+as
+	select *
+	from Kitchen
+go
+
+exec spN_KitchenDetails
+
+go
+
 /*
 e. Return information on the customers that dine at the restaurant. This stored procedure
 should be able to run and return individual customer information
