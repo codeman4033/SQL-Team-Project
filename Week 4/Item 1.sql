@@ -61,22 +61,56 @@ think is the appropriate field. Document why you made this selection. */
 
 -- a.
 
+-- Creates a non-clustered composite index on the Charity table to make finding the charities contact information much easier without the additional columns
 
+DROP INDEX IF EXISTS IX_Charity_ContactInformation
+ON dbo.Charity
+
+CREATE NONCLUSTERED INDEX IX_Charity_ContactInformation
+ON dbo.Charity (CharityName, ContactName, PhoneNumber, EmailAddress)
 
 -- b.
 
+/* Creates a simple non-clustered index on one of the table's foreign keys for finding the location of specific food items on the menu
+or to search for other necessary information on the RestaurantLocation table in queries */
 
+DROP INDEX IF EXISTS IX_MenuItem_RestaurantLocationID
+ON dbo.MenuItem
+
+CREATE NONCLUSTERED INDEX IX_MenuItem_RestaurantLocationID
+ON dbo.MenuItem (RestaurantLocationID)
 
 -- c.
 
+-- Creates a non-clustered composite index that can be used to quickly find which recipes are currently active and being used
 
+DROP INDEX IF EXISTS IX_Recipe_Status
+ON dbo.Recipe
+
+CREATE NONCLUSTERED INDEX IX_Recipe_Status
+ON dbo.Recipe (RecipeName, IsActive)
 
 -- d. 
 
+-- Creates a non-clustered composite filtered index to find all dine-in customers and when they dine in so they could possibly receive loyalty deals
 
+DROP INDEX IF EXISTS IX_CustomerOrder_DineInCustomers
+ON dbo.CustomerOrder
+
+CREATE NONCLUSTERED INDEX IX_CustomerOrder_DineInCustomers
+ON dbo.CustomerOrder (CustomerID, OrderDateTime)
+WHERE OrderType = 'Dine-In'
 
 -- e.
 
+/* Creates a unique non-clustered composite index to locate what customers will be showing up at what restaurant locations and when
+while ensuring that the same customer can't have more than one reservation at the same location */
+
+DROP INDEX IF EXISTS IX_Reservation_CustomerLocationDate
+ON dbo.Reservation
+
+CREATE UNIQUE NONCLUSTERED INDEX IX_Reservation_CustomerLocationDate
+ON dbo.Reservation (CustomerID, RestaurantLocationID, ReservationDateTime)
 
 -- ITEM 3 --
 
