@@ -46,6 +46,12 @@ e. Return information on the customers that dine at the restaurant. This stored 
 should be able to run and return individual customer information
 */
 
+create or alter procedure spN_CustomerDetails
+as
+	select *
+	from Customer
+go
+
 -- ITEM 2 --
 
 -- Landon Heezen
