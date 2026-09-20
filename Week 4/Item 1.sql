@@ -34,6 +34,8 @@ order by RecipeName
 go
 
 exec spN_RecipeDetails
+
+go
 	
 /*
 c. Show me the ingredients used in each recipe and the prices listed for those dishes that
