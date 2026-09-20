@@ -68,6 +68,10 @@ as
 	from Customer
 go
 
+exec spN_CustomerDetails
+
+go
+
 -- ITEM 2 --
 
 -- Landon Heezen
