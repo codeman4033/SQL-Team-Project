@@ -123,22 +123,181 @@ each table will have one stored procedure for each of the following tasks: */
 /*
 a. SELECT from
 */
+--1. Create procedure
+--returns one charity by it is charity_ID
+CREATE PROCEDURE dbo.spN_GetCharity
+@CharityID INT
+--the start of the procedure’s instructions
+AS 
+BEGIN 
+SET NOCOUNT on;
+
+--Chooses which columns to return.
+SELECT 
+CharityID, 
+CharityName,
+ContactName,
+PhoneNumber,
+EmailAddress,
+Address,
+DateTime
+
+FROM Charity
+--Returns only the charity whose ID matches the value supplied to the procedure.
+WHERE CharityID =@CharityID 
+if @@ROWCOUNT = 0
+SELECT 'No charity found with that ID.' AS resultmessage;
+END
+GO
+--TEST
+EXEC dbo.spN_GetCharity @CharityID = 1;
+GO
 
 /*
 b. INSERT into. It is up to you to decide what field(s) to include in the insert based on the
 requirements above.
 */
+--2 insert: Add a charity and return the new record
+CREATE PROCEDURE dbo.spN_INSERTCharity
+@CharityName varchar(50),
+@ContactName varchar(50),
+@PhoneNumber varchar(50),
+@EmailAddress varchar(50),
+@Address varchar(50)
+--The procedure’s instructions start.
+AS
+--Starting the body of the procedure.
+BEGIN
+--Hides “1 row affected” messages. Your SELECT result still appears
+SET NOCOUNT ON;
+BEGIN TRY
+INSERT INTO Charity (
+CharityName, 
+ContactName, 
+PhoneNumber,
+EmailAddress, 
+Address, 
+DateTime)
+--Provides one value for each column, in the same order
+VALUES
+(@CharityName, 
+@ContactName, 
+@PhoneNumber,
+@EmailAddress,@Address,
+GETDATE());
+--Returns the charity record after inserting it
+SELECT
+CharityID,
+CharityName,
+ContactName,
+PhoneNumber,
+EmailAddress,
+DateTime
+FROM Charity
+WHERE CharityID = SCOPE_IDENTITY();
+END TRY
+BEGIN CATCH
+--Displays the error as a result, so you can see what went wrong.
+SELECT ERROR_MESSAGE() AS resultmessage;
+END CATCH
+END
+--TEST
+EXEC dbo.spN_InsertCharity
+    @CharityName = 'Week 4 Test Charity',
+    @ContactName = 'Test Contact',
+    @PhoneNumber = '01-555-0101',
+    @EmailAddress = 'test@example.ie',
+    @Address = '10 Main Street, Dublin';
+GO
 
 /*
 c. UPDATE – this will mean updating most fields on each table. It is up to you to decide
 what field(s) to include when updating each table. For each update, you will need to
 update at least three (3) fields.
 */
+--3.UPDATE: Change five fields and return the updated record.
+CREATE PROCEDURE dbo.spN_updateCharity
+@CharityID int,
+@CharityName varchar(50),
+@ContactName varchar(50),
+@PhoneNumber varchar(50),
+@EmailAddress varchar(50),
+@Address varchar(50)
+--The procedure’s instructions start.
+AS
+--Starting the body of the procedure.
+BEGIN
+--Hides “1 row affected” messages. Your SELECT result still appears
+SET NOCOUNT ON;
+BEGIN TRY
+UPDATE Charity
+SET 
+CharityName = @CharityName,
+ContactName = @ContactName,
+PhoneNumber = @PhoneNumber,
+EmailAddress = @EmailAddress,
+ Address = @Address
+--Returns all columns from the new version of the updated row.
+  OUTPUT INSERTED.*
+ WHERE CharityID = @CharityID
+ --Checks whether the UPDATE changed zero rows
+ IF @@ROWCOUNT = 0
+ --Returns a message when there was no matching charity.
+ SELECT 'No charity found with that ID.' AS ResultMessage;
+ END TRY
+ --Runs if an error occurs in the TRY section.
+ BEGIN CATCH
+ SELECT ERROR_MESSAGE() AS ResultMessage;
+ END CATCH
+ END;
+ GO
+ -- Test
+ EXEC dbo.spN_UpdateCharity
+    @CharityID = 17,
+    @CharityName = 'catholic charity',
+    @ContactName = 'head of catholic',
+    @PhoneNumber = '01-555-0202',
+    @EmailAddress = 'catholic@example.ie',
+    @Address = '20 Main Street, Dublin';
+    GO
 
 /*
 d. DELETE – this will mean deleting a record from the table. When completing this step,
 keep in mind the relationships you established in the previous step.
 */
+ -- 4. DELETE: Protect charities referenced by Donation.
+ CREATE PROCEDURE dbo.spN_DeleteCharity
+ @CharityID  INT
+ AS 
+ BEGIN
+ SET NOCOUNT ON;
+ IF EXISTS
+( SELECT 1
+FROM Donation
+WHERE CharityID =@CharityID
+)
+BEGIN 
+SELECT 'Cannot delete this charity because it has donations.' AS ResultMessage;
+RETURN;
+END;
+BEGIN TRY
+DELETE FROM Charity
+OUTPUT DELETED.*
+WHERE CharityID =@CharityID
+
+IF @@ROWCOUNT = 0
+SELECT 'No charity found with that ID.' AS ResultMessage;
+END TRY
+BEGIN CATCH
+SELECT ERROR_MESSAGE() AS ResultMessage;
+END CATCH
+END;
+GO
+--TEST
+EXEC dbo.spN_DeleteCharity @CharityID = 101;
+GO
+-- Verify that the charity was deleted.
+EXEC dbo.spN_GetCharity @CharityID = 101;
 
 /*
 e. Name each stored procedure with the appropriate table name and action. For example,
