@@ -4,7 +4,7 @@
 -- WEEK 4 DELIVERABLES --
 
 USE Restaurant
-
+GO
 -- ITEM 1 --
 
 -- Nathan Aird
@@ -15,7 +15,6 @@ USE Restaurant
 a. Return the chef(s) that have a preferred vendor and what item(s) these chefs prefer
 from these vendors. Also include the price for these items.
 */
-
 -- Run code in comment once to prepare ChefSupplier Table
 /*
 alter table ChefSupplier
@@ -43,7 +42,7 @@ go
 exec spN_ChefDetails	
 
 go
-	
+
 /*
 b. Return the sum of the ingredients by recipe. Also included with this will be the recipe
 items.
@@ -171,7 +170,7 @@ ON dbo.Reservation
 
 CREATE UNIQUE NONCLUSTERED INDEX IX_Reservation_CustomerLocationDate
 ON dbo.Reservation (CustomerID, RestaurantLocationID, ReservationDateTime)
-
+go
 -- ITEM 3 --
 
 -- Cody Ferguson + Osman Abdirahman
@@ -185,7 +184,7 @@ a. SELECT from
 */
 --1. Create procedure
 --returns one charity by it is charity_ID
-CREATE PROCEDURE dbo.spN_GetCharity
+CREATE OR ALTER PROCEDURE dbo.spN_GetCharity
 @CharityID INT
 --the start of the procedure’s instructions
 AS 
@@ -218,7 +217,7 @@ b. INSERT into. It is up to you to decide what field(s) to include in the insert
 requirements above.
 */
 --2 insert: Add a charity and return the new record
-CREATE PROCEDURE dbo.spN_INSERTCharity
+CREATE OR ALTER PROCEDURE dbo.spN_INSERTCharity
 @CharityName varchar(50),
 @ContactName varchar(50),
 @PhoneNumber varchar(50),
@@ -276,7 +275,7 @@ what field(s) to include when updating each table. For each update, you will nee
 update at least three (3) fields.
 */
 --3.UPDATE: Change five fields and return the updated record.
-CREATE PROCEDURE dbo.spN_updateCharity
+CREATE OR ALTER PROCEDURE dbo.spN_updateCharity
 @CharityID int,
 @CharityName varchar(50),
 @ContactName varchar(50),
@@ -326,7 +325,7 @@ d. DELETE – this will mean deleting a record from the table. When completing t
 keep in mind the relationships you established in the previous step.
 */
  -- 4. DELETE: Protect charities referenced by Donation.
- CREATE PROCEDURE dbo.spN_DeleteCharity
+ CREATE OR ALTER PROCEDURE dbo.spN_DeleteCharity
  @CharityID  INT
  AS 
  BEGIN
@@ -358,28 +357,179 @@ EXEC dbo.spN_DeleteCharity @CharityID = 101;
 GO
 -- Verify that the charity was deleted.
 EXEC dbo.spN_GetCharity @CharityID = 101;
-
+go
+-- Recipe table
 /*
-e. Name each stored procedure with the appropriate table name and action. For example,
-if we have the table Server above, each procedure will be named as follows:
+a. SELECT from
 */
 
--- i. SELECT – spN_GetServer
--- ii. INSERT – spN_InsertServer
--- iii. UPDATE – spN_UpdateServer
--- iv. DELETE – spN_DeleteServer
+CREATE OR ALTER PROCEDURE spN_GetRecipe
+    @RecipeID INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    SELECT
+        RecipeID,
+        RecipeName,
+        Instructions,
+        PreparationMinutes,
+        CookingMinutes,
+        ServingSize,
+        IsActive,
+        DateTime
+    FROM Recipe
+    WHERE RecipeID = @RecipeID;
+END;
+GO
 
 /*
-f. At least one stored procedure for each action (select, insert, update and delete) needs
-to have at least one parameter as part of the stored procedure.
+b. INSERT into. It is up to you to decide what field(s) to include in the insert based on the
+requirements above.
 */
 
-/*
-g. At least one stored procedure for each action (select, insert, update and delete) needs
-to have at least one parameter as part of the stored procedure.
-*/
+CREATE OR ALTER PROCEDURE spN_InsertRecipe
+    @RecipeName VARCHAR(50),
+    @Instructions VARCHAR(150),
+    @PreparationMinutes INT,
+    @CookingMinutes INT,
+    @ServingSize INT,
+    @IsActive BIT = 1,
+    @RecipeID INT OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    INSERT INTO Recipe
+    (
+        RecipeName,
+        Instructions,
+        PreparationMinutes,
+        CookingMinutes,
+        ServingSize,
+        IsActive
+    )
+    VALUES
+    (
+        @RecipeName,
+        @Instructions,
+        @PreparationMinutes,
+        @CookingMinutes,
+        @ServingSize,
+        @IsActive
+    );
+
+    SET @RecipeID = SCOPE_IDENTITY();
+
+    SELECT
+        RecipeID,
+        RecipeName,
+        Instructions,
+        PreparationMinutes,
+        CookingMinutes,
+        ServingSize,
+        IsActive,
+        DateTime
+    FROM Recipe
+    WHERE RecipeID = @RecipeID;
+END;
+GO
+
 
 /*
-h. When each stored procedure is executed, it should not generate any exceptions and all
-should return data.
+c. UPDATE – this will mean updating most fields on each table. It is up to you to decide
+what field(s) to include when updating each table. For each update, you will need to
+update at least three (3) fields.
 */
+
+CREATE OR ALTER PROCEDURE spN_UpdateRecipe
+    @RecipeID INT,
+    @RecipeName VARCHAR(50),
+    @Instructions VARCHAR(150),
+    @PreparationMinutes INT,
+    @CookingMinutes INT,
+    @ServingSize INT,
+    @IsActive BIT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    UPDATE Recipe
+    SET
+        RecipeName = @RecipeName,
+        Instructions = @Instructions,
+        PreparationMinutes = @PreparationMinutes,
+        CookingMinutes = @CookingMinutes,
+        ServingSize = @ServingSize,
+        IsActive = @IsActive
+    OUTPUT
+        INSERTED.RecipeID,
+        INSERTED.RecipeName,
+        INSERTED.Instructions,
+        INSERTED.PreparationMinutes,
+        INSERTED.CookingMinutes,
+        INSERTED.ServingSize,
+        INSERTED.IsActive,
+        INSERTED.DateTime
+    WHERE RecipeID = @RecipeID;
+END;
+GO
+
+
+/*
+d. DELETE – this will mean deleting a record from the table. When completing this step,
+keep in mind the relationships you established in the previous step.
+*/
+
+CREATE OR ALTER PROCEDURE spN_DeleteRecipe
+    @RecipeID INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    DELETE FROM Recipe
+    OUTPUT
+        DELETED.RecipeID,
+        DELETED.RecipeName,
+        DELETED.Instructions,
+        DELETED.PreparationMinutes,
+        DELETED.CookingMinutes,
+        DELETED.ServingSize,
+        DELETED.IsActive,
+        DELETED.DateTime
+    WHERE RecipeID = @RecipeID;
+END;
+GO
+
+DECLARE @RecipeID INT;
+
+EXEC spN_InsertRecipe
+    @RecipeName = 'Test Pasta',
+    @Instructions = 'Cook pasta and add sauce.',
+    @PreparationMinutes = 10,
+    @CookingMinutes = 15,
+    @ServingSize = 4,
+    @IsActive = 1,
+    @RecipeID = @RecipeID OUTPUT;
+
+
+/* SELECT the newly inserted recipe */
+EXEC spN_GetRecipe
+    @RecipeID = @RecipeID;
+
+
+/* UPDATE the newly inserted recipe */
+EXEC spN_UpdateRecipe
+    @RecipeID = @RecipeID,
+    @RecipeName = 'Updated Pasta',
+    @Instructions = 'Boil pasta and add the prepared sauce.',
+    @PreparationMinutes = 12,
+    @CookingMinutes = 20,
+    @ServingSize = 5,
+    @IsActive = 1;
+
+
+/* DELETE the same recipe */
+EXEC spN_DeleteRecipe
+    @RecipeID = @RecipeID;
+GO
