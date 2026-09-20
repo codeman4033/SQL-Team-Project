@@ -16,6 +16,34 @@ a. Return the chef(s) that have a preferred vendor and what item(s) these chefs 
 from these vendors. Also include the price for these items.
 */
 
+-- Run code in comment once to prepare ChefSupplier Table
+/*
+alter table ChefSupplier
+add IngredientID int
+
+alter table ChefSupplier
+add constraint FK_ChefSupplier_Ingredient
+foreign key (IngredientID) references Ingredient(IngredientID)
+
+alter table ChefSupplier
+add PricePerUnit decimal(10,2)
+*/
+
+create or alter procedure spN_ChefDetails
+as
+select FirstName + ' ' + LastName as Name, cs.IngredientID, PricePerUnit
+from ChefSupplier cs
+	join Employee e
+		on cs.EmployeeID = e.EmployeeID
+	join Ingredient i
+		on cs.IngredientID = i.IngredientID
+where IsPreferred = 1
+go
+
+exec spN_ChefDetails	
+
+go
+	
 /*
 b. Return the sum of the ingredients by recipe. Also included with this will be the recipe
 items.
