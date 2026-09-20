@@ -42,6 +42,18 @@ c. Show me the ingredients used in each recipe and the prices listed for those d
 use the ingredients.
 */
 
+create or alter procedure spN_RecipeIngredients
+as
+select ItemName, RecipeName, Price
+from MenuItem mt
+	join Recipe r
+		on mt.RecipeID = r.RecipeID
+go
+
+exec spN_RecipeIngredients
+
+go
+	
 /*
 d. Show me the kitchen details. These details can either be all records or by individual
 chef.
