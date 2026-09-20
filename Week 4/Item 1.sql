@@ -21,6 +21,17 @@ b. Return the sum of the ingredients by recipe. Also included with this will be 
 items.
 */
 
+create or alter procedure spN_RecipeDetails
+as
+select r.RecipeName, i.IngredientName, sum(QuantityRequired) as QuantityRequired
+from RecipeIngredient ri
+	join Recipe r
+		on ri.RecipeID = r.RecipeID
+	join Ingredient i
+		on ri.IngredientID = i.IngredientID
+group by rollup(i.IngredientName, r.RecipeName)
+order by RecipeName
+	
 /*
 c. Show me the ingredients used in each recipe and the prices listed for those dishes that
 use the ingredients.
