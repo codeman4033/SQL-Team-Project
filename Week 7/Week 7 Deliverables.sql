@@ -1,535 +1,104 @@
 -- SQL Programming Advanced: Final Project --
 -- By: Osman Abdirahman, Landon Heezen, Nathan Aird, Cody Ferguson --
 
--- WEEK 4 DELIVERABLES --
+-- WEEK 7 DELIVERABLES --
 
 USE Restaurant
 GO
--- ITEM 1 --
 
--- Nathan Aird
+-- Deliverable 1 --
 
--- Develop five (5) stored procedures that will do the following:
+-- Landon Heezen --
 
-/* 
-a. Return the chef(s) that have a preferred vendor and what item(s) these chefs prefer
-from these vendors. Also include the price for these items.
-*/
--- Run code in comment once to prepare ChefSupplier Table
-/*
-alter table ChefSupplier
-add IngredientID int
+-- Perform the following tasks:
 
-alter table ChefSupplier
-add constraint FK_ChefSupplier_Ingredient
-foreign key (IngredientID) references Ingredient(IngredientID)
+-- a. Disable the NT SERVICE\SQLSERVERAGENT login at the database level
 
-alter table ChefSupplier
-add PricePerUnit decimal(10,2)
-*/
 
-create or alter procedure spN_ChefDetails
-as
-select FirstName + ' ' + LastName as Name, cs.IngredientID, PricePerUnit
-from ChefSupplier cs
-	join Employee e
-		on cs.EmployeeID = e.EmployeeID
-	join Ingredient i
-		on cs.IngredientID = i.IngredientID
-where IsPreferred = 1
-go
-
-exec spN_ChefDetails	
-
-go
-
-/*
-b. Return the sum of the ingredients by recipe. Also included with this will be the recipe
-items.
-*/
-
-create or alter procedure spN_RecipeDetails
-as
-select r.RecipeName, i.IngredientName, sum(QuantityRequired) as QuantityRequired
-from RecipeIngredient ri
-	join Recipe r
-		on ri.RecipeID = r.RecipeID
-	join Ingredient i
-		on ri.IngredientID = i.IngredientID
-group by rollup(i.IngredientName, r.RecipeName)
-order by RecipeName
-go
-
-exec spN_RecipeDetails
-
-go
 	
-/*
-c. Show me the ingredients used in each recipe and the prices listed for those dishes that
-use the ingredients.
-*/
+/* b. Add a new role/user called ‘RestaurantUser’ at the Restaurant database level (not at the
+server level) */
+-- i. Assign the schema db_backupoperator to this role/user.
 
-create or alter procedure spN_RecipeIngredients
-as
-select ItemName, RecipeName, Price
-from MenuItem mt
-	join Recipe r
-		on mt.RecipeID = r.RecipeID
-go
 
-exec spN_RecipeIngredients
-
-go
 	
-/*
-d. Show me the kitchen details. These details can either be all records or by individual
-chef.
+/* c. Create a role/user in the Restaurant database called ‘RestaurantDoAnything’ and grant
+the necessary permissions for this role/user to do anything to the Restaurant database */
+
+
+	
+/* d. Create a role/user that is called ‘RestaurantAddDeleteDb’ and grant the necessary
+permissions for this role/user to create, alter, drop, or restore any database, but is not
+allowed to insert into any database */
+
+
+	
+/* e. Create a role/user that is called ‘RestaurantPower’ that can modify the rights/privileges
+of users in the Restaurant database.
 */
 
-create or alter procedure spN_KitchenDetails
-as
-	select *
-	from Kitchen
-go
+-- Deliverable 2 --
 
-exec spN_KitchenDetails
+-- Cody Ferguson --
 
-go
+/* For all five (5) stored procedures developed in Week 4 Deliverables, Item 1, perform the
+following actions. Generate the necessary SQL scripts for each action and save them to a folder
+on your VM desktop called ‘Week 7 sp Object Permissions */
 
-/*
-e. Return information on the customers that dine at the restaurant. This stored procedure
-should be able to run and return individual customer information
-*/
-
-create or alter procedure spN_CustomerDetails
-as
-	select *
-	from Customer
-go
-
-exec spN_CustomerDetails
-
-go
-
--- ITEM 2 --
-
--- Landon Heezen
-
-/* Develop the following indexes for the tables listed below. Foe each table, select what you
-think is the appropriate field. Document why you made this selection. */
-
--- a.
-
--- Creates a non-clustered composite index on the Charity table to make finding the charities contact information much easier without the additional columns
-
-DROP INDEX IF EXISTS IX_Charity_ContactInformation
-ON dbo.Charity
-
-CREATE NONCLUSTERED INDEX IX_Charity_ContactInformation
-ON dbo.Charity (CharityName, ContactName, PhoneNumber, EmailAddress)
-
--- b.
-
-/* Creates a simple non-clustered index on one of the table's foreign keys for finding the location of specific food items on the menu
-or to search for other necessary information on the RestaurantLocation table in queries */
-
-DROP INDEX IF EXISTS IX_MenuItem_RestaurantLocationID
-ON dbo.MenuItem
-
-CREATE NONCLUSTERED INDEX IX_MenuItem_RestaurantLocationID
-ON dbo.MenuItem (RestaurantLocationID)
-
--- c.
-
--- Creates a non-clustered composite index that can be used to quickly find which recipes are currently active and being used
-
-DROP INDEX IF EXISTS IX_Recipe_Status
-ON dbo.Recipe
-
-CREATE NONCLUSTERED INDEX IX_Recipe_Status
-ON dbo.Recipe (RecipeName, IsActive)
-
--- d. 
-
--- Creates a non-clustered composite filtered index to find all dine-in customers and when they dine in so they could possibly receive loyalty deals
-
-DROP INDEX IF EXISTS IX_CustomerOrder_DineInCustomers
-ON dbo.CustomerOrder
-
-CREATE NONCLUSTERED INDEX IX_CustomerOrder_DineInCustomers
-ON dbo.CustomerOrder (CustomerID, OrderDateTime)
-WHERE OrderType = 'Dine-In'
-
--- e.
-
-/* Creates a unique non-clustered composite index to locate what customers will be showing up at what restaurant locations and when
-while ensuring that the same customer can't have more than one reservation at the same location */
-
-DROP INDEX IF EXISTS IX_Reservation_CustomerLocationDate
-ON dbo.Reservation
-
-CREATE UNIQUE NONCLUSTERED INDEX IX_Reservation_CustomerLocationDate
-ON dbo.Reservation (CustomerID, RestaurantLocationID, ReservationDateTime)
-go
--- ITEM 3 --
-
--- Cody Ferguson + Osman Abdirahman
-
-/* For two (2) tables above (your choice), develop stored procedures that will allow you to
-perform CRUD (create/insert/update/delete) operations against those tables. This means that
-each table will have one stored procedure for each of the following tasks: */
-
-/*
-a. SELECT from
-*/
---1. Create procedure
---returns one charity by it is charity_ID
-CREATE OR ALTER PROCEDURE dbo.spN_GetCharity
-@CharityID INT
---the start of the procedure’s instructions
-AS 
-BEGIN 
-SET NOCOUNT on;
-
---Chooses which columns to return.
-SELECT 
-CharityID, 
-CharityName,
-ContactName,
-PhoneNumber,
-EmailAddress,
-Address,
-DateTime
-
-FROM Charity
---Returns only the charity whose ID matches the value supplied to the procedure.
-WHERE CharityID =@CharityID 
-if @@ROWCOUNT = 0
-SELECT 'No charity found with that ID.' AS resultmessage;
-END
-GO
---TEST
-EXEC dbo.spN_GetCharity @CharityID = 1;
-GO
-
-/*
-b. INSERT into. It is up to you to decide what field(s) to include in the insert based on the
-requirements above.
-*/
---2 insert: Add a charity and return the new record
-CREATE OR ALTER PROCEDURE dbo.spN_INSERTCharity
-@CharityName varchar(50),
-@ContactName varchar(50),
-@PhoneNumber varchar(50),
-@EmailAddress varchar(50),
-@Address varchar(50)
---The procedure’s instructions start.
-AS
---Starting the body of the procedure.
-BEGIN
---Hides “1 row affected” messages. Your SELECT result still appears
-SET NOCOUNT ON;
-BEGIN TRY
-INSERT INTO Charity (
-CharityName, 
-ContactName, 
-PhoneNumber,
-EmailAddress, 
-Address, 
-DateTime)
---Provides one value for each column, in the same order
-VALUES
-(@CharityName, 
-@ContactName, 
-@PhoneNumber,
-@EmailAddress,@Address,
-GETDATE());
---Returns the charity record after inserting it
-SELECT
-CharityID,
-CharityName,
-ContactName,
-PhoneNumber,
-EmailAddress,
-DateTime
-FROM Charity
-WHERE CharityID = SCOPE_IDENTITY();
-END TRY
-BEGIN CATCH
---Displays the error as a result, so you can see what went wrong.
-SELECT ERROR_MESSAGE() AS resultmessage;
-END CATCH
-END
---TEST
-EXEC dbo.spN_InsertCharity
-    @CharityName = 'Week 4 Test Charity',
-    @ContactName = 'Test Contact',
-    @PhoneNumber = '01-555-0101',
-    @EmailAddress = 'test@example.ie',
-    @Address = '10 Main Street, Dublin';
-GO
-
-/*
-c. UPDATE – this will mean updating most fields on each table. It is up to you to decide
-what field(s) to include when updating each table. For each update, you will need to
-update at least three (3) fields.
-*/
---3.UPDATE: Change five fields and return the updated record.
-CREATE OR ALTER PROCEDURE dbo.spN_updateCharity
-@CharityID int,
-@CharityName varchar(50),
-@ContactName varchar(50),
-@PhoneNumber varchar(50),
-@EmailAddress varchar(50),
-@Address varchar(50)
---The procedure’s instructions start.
-AS
---Starting the body of the procedure.
-BEGIN
---Hides “1 row affected” messages. Your SELECT result still appears
-SET NOCOUNT ON;
-BEGIN TRY
-UPDATE Charity
-SET 
-CharityName = @CharityName,
-ContactName = @ContactName,
-PhoneNumber = @PhoneNumber,
-EmailAddress = @EmailAddress,
- Address = @Address
---Returns all columns from the new version of the updated row.
-  OUTPUT INSERTED.*
- WHERE CharityID = @CharityID
- --Checks whether the UPDATE changed zero rows
- IF @@ROWCOUNT = 0
- --Returns a message when there was no matching charity.
- SELECT 'No charity found with that ID.' AS ResultMessage;
- END TRY
- --Runs if an error occurs in the TRY section.
- BEGIN CATCH
- SELECT ERROR_MESSAGE() AS ResultMessage;
- END CATCH
- END;
- GO
- -- Test
- EXEC dbo.spN_UpdateCharity
-    @CharityID = 17,
-    @CharityName = 'catholic charity',
-    @ContactName = 'head of catholic',
-    @PhoneNumber = '01-555-0202',
-    @EmailAddress = 'catholic@example.ie',
-    @Address = '20 Main Street, Dublin';
-    GO
-
-/*
-d. DELETE – this will mean deleting a record from the table. When completing this step,
-keep in mind the relationships you established in the previous step.
-*/
- -- 4. DELETE: Protect charities referenced by Donation.
- CREATE OR ALTER PROCEDURE dbo.spN_DeleteCharity
- @CharityID  INT
- AS 
- BEGIN
- SET NOCOUNT ON;
- IF EXISTS
-( SELECT 1
-FROM Donation
-WHERE CharityID =@CharityID
-)
-BEGIN 
-SELECT 'Cannot delete this charity because it has donations.' AS ResultMessage;
-RETURN;
-END;
-BEGIN TRY
-DELETE FROM Charity
-OUTPUT DELETED.*
-WHERE CharityID =@CharityID
-
-IF @@ROWCOUNT = 0
-SELECT 'No charity found with that ID.' AS ResultMessage;
-END TRY
-BEGIN CATCH
-SELECT ERROR_MESSAGE() AS ResultMessage;
-END CATCH
-END;
-GO
---TEST
-EXEC dbo.spN_DeleteCharity @CharityID = 101;
-GO
--- Verify that the charity was deleted.
-EXEC dbo.spN_GetCharity @CharityID = 101;
-go
--- Recipe table
-/*
-a. SELECT from
-*/
-
-CREATE OR ALTER PROCEDURE spN_GetRecipe
-    @RecipeID INT
-AS
-BEGIN
-    SET NOCOUNT ON;
-
-    SELECT
-        RecipeID,
-        RecipeName,
-        Instructions,
-        PreparationMinutes,
-        CookingMinutes,
-        ServingSize,
-        IsActive,
-        DateTime
-    FROM Recipe
-    WHERE RecipeID = @RecipeID;
-END;
-GO
-
-/*
-b. INSERT into. It is up to you to decide what field(s) to include in the insert based on the
-requirements above.
-*/
-
-CREATE OR ALTER PROCEDURE spN_InsertRecipe
-    @RecipeName VARCHAR(50),
-    @Instructions VARCHAR(150),
-    @PreparationMinutes INT,
-    @CookingMinutes INT,
-    @ServingSize INT,
-    @IsActive BIT = 1,
-    @RecipeID INT OUTPUT
-AS
-BEGIN
-    SET NOCOUNT ON;
-
-    INSERT INTO Recipe
-    (
-        RecipeName,
-        Instructions,
-        PreparationMinutes,
-        CookingMinutes,
-        ServingSize,
-        IsActive
-    )
-    VALUES
-    (
-        @RecipeName,
-        @Instructions,
-        @PreparationMinutes,
-        @CookingMinutes,
-        @ServingSize,
-        @IsActive
-    );
-
-    SET @RecipeID = SCOPE_IDENTITY();
-
-    SELECT
-        RecipeID,
-        RecipeName,
-        Instructions,
-        PreparationMinutes,
-        CookingMinutes,
-        ServingSize,
-        IsActive,
-        DateTime
-    FROM Recipe
-    WHERE RecipeID = @RecipeID;
-END;
-GO
+/* a. Assign ‘execute’ permissions to the object in Week 4 Deliverables, Item 1a, to schema
+‘dbo’ */
 
 
-/*
-c. UPDATE – this will mean updating most fields on each table. It is up to you to decide
-what field(s) to include when updating each table. For each update, you will need to
-update at least three (3) fields.
-*/
-
-CREATE OR ALTER PROCEDURE spN_UpdateRecipe
-    @RecipeID INT,
-    @RecipeName VARCHAR(50),
-    @Instructions VARCHAR(150),
-    @PreparationMinutes INT,
-    @CookingMinutes INT,
-    @ServingSize INT,
-    @IsActive BIT
-AS
-BEGIN
-    SET NOCOUNT ON;
-
-    UPDATE Recipe
-    SET
-        RecipeName = @RecipeName,
-        Instructions = @Instructions,
-        PreparationMinutes = @PreparationMinutes,
-        CookingMinutes = @CookingMinutes,
-        ServingSize = @ServingSize,
-        IsActive = @IsActive
-    OUTPUT
-        INSERTED.RecipeID,
-        INSERTED.RecipeName,
-        INSERTED.Instructions,
-        INSERTED.PreparationMinutes,
-        INSERTED.CookingMinutes,
-        INSERTED.ServingSize,
-        INSERTED.IsActive,
-        INSERTED.DateTime
-    WHERE RecipeID = @RecipeID;
-END;
-GO
+	
+/* b. Assign ‘View Definition’ permissions to the user ‘RestaurantUser’ to the stored
+procedure listed in Week 4 Deliverables, Item 1b. */
 
 
-/*
-d. DELETE – this will mean deleting a record from the table. When completing this step,
-keep in mind the relationships you established in the previous step.
-*/
-
-CREATE OR ALTER PROCEDURE spN_DeleteRecipe
-    @RecipeID INT
-AS
-BEGIN
-    SET NOCOUNT ON;
-
-    DELETE FROM Recipe
-    OUTPUT
-        DELETED.RecipeID,
-        DELETED.RecipeName,
-        DELETED.Instructions,
-        DELETED.PreparationMinutes,
-        DELETED.CookingMinutes,
-        DELETED.ServingSize,
-        DELETED.IsActive,
-        DELETED.DateTime
-    WHERE RecipeID = @RecipeID;
-END;
-GO
-
-DECLARE @RecipeID INT;
-
-EXEC spN_InsertRecipe
-    @RecipeName = 'Test Pasta',
-    @Instructions = 'Cook pasta and add sauce.',
-    @PreparationMinutes = 10,
-    @CookingMinutes = 15,
-    @ServingSize = 4,
-    @IsActive = 1,
-    @RecipeID = @RecipeID OUTPUT;
+	
+/* c. Assign ‘Alter’ permissions to the user ‘RestaurantAddDeleteDb’ to the stored procedure
+listed in Week 4 Deliverables, Item 1c. */
 
 
-/* SELECT the newly inserted recipe */
-EXEC spN_GetRecipe
-    @RecipeID = @RecipeID;
+	
+/* d. Assign ‘Take Ownership’ permissions to the user ‘RestaurantPower’ to the stored
+procedure listed in Week 4 Deliverables, Item 1d. */
 
 
-/* UPDATE the newly inserted recipe */
-EXEC spN_UpdateRecipe
-    @RecipeID = @RecipeID,
-    @RecipeName = 'Updated Pasta',
-    @Instructions = 'Boil pasta and add the prepared sauce.',
-    @PreparationMinutes = 12,
-    @CookingMinutes = 20,
-    @ServingSize = 5,
-    @IsActive = 1;
+	
+/* e. Assign ‘Control’ permission to the user RestaurantDoAnything’ to the stored procedure
+listed in Week 4 Deliverables, Item 1e. */
+
+-- Deliverable 3 --
+
+-- Osman Abdirahman & Nathan Aird --
+
+/* For the following tables, create the provided user/role and assign the required permissions
+to that user/role */
+
+/* a. Table: Table name used for item h in Week 2 Deliverables; user/role: [table name
+here]_table_user; permissions: db_datareader */
+	
+/* i. For example, if that table was named Recipes, the role would be called
+recipe_table_user. */
 
 
-/* DELETE the same recipe */
-EXEC spN_DeleteRecipe
-    @RecipeID = @RecipeID;
-GO
+
+/* b. Table: Table name used for item l in Week 2 Deliverables; user/role: [table name
+here]_table_user; permissions: guest */
+
+
+	
+/* c. Table: Table name used for item o in Week 2 Deliverables; user/role: [table name
+here]_table_user; permissions: db_datawriter */
+
+
+	
+/* d. Table: Table name used for item b in Week 2 Deliverables; user/role: [table name
+here]_table_user; permissions: db_accessadmin */
+
+
+
+/* e. Table: Table name used for item p in Week 2 Deliverables; user/role: [table name
+here]_table_user; permissions: db_datareader, db_datawriter */
+
+
