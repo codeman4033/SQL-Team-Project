@@ -77,7 +77,6 @@ to that user/role */
 
 /* a. Table: Table name used for item h in Week 2 Deliverables; user/role: [table name
 here]_table_user; permissions: db_datareader */
-	
 /* i. For example, if that table was named Recipes, the role would be called
 recipe_table_user. */
 
