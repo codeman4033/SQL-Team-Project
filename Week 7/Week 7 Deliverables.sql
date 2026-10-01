@@ -14,28 +14,81 @@ GO
 
 -- a. Disable the NT SERVICE\SQLSERVERAGENT login at the database level
 
-
+ALTER LOGIN [NT SERVICE\SQLSERVERAGENT] DISABLE
 	
 /* b. Add a new role/user called ‘RestaurantUser’ at the Restaurant database level (not at the
 server level) */
 -- i. Assign the schema db_backupoperator to this role/user.
 
+IF NOT EXISTS (SELECT 1
+			   FROM sys.database_principals
+			   WHERE name = 'RestaurantUser')
 
-	
+BEGIN
+
+	CREATE USER RestaurantUser
+	WITHOUT LOGIN
+	WITH DEFAULT_SCHEMA = db_backupoperator
+
+END
+
 /* c. Create a role/user in the Restaurant database called ‘RestaurantDoAnything’ and grant
 the necessary permissions for this role/user to do anything to the Restaurant database */
 
+IF NOT EXISTS (SELECT 1
+			   FROM sys.database_principals
+			   WHERE name = 'RestaurantDoAnything')
 
-	
+BEGIN
+
+	CREATE USER RestaurantDoAnything
+	WITHOUT LOGIN
+
+	ALTER ROLE db_owner
+	ADD MEMBER RestaurantDoAnything
+
+END
+
 /* d. Create a role/user that is called ‘RestaurantAddDeleteDb’ and grant the necessary
 permissions for this role/user to create, alter, drop, or restore any database, but is not
 allowed to insert into any database */
 
+IF NOT EXISTS (SELECT 1
+			   FROM sys.server_principals
+			   WHERE name = 'RestaurantAddDeleteDb')
 
+BEGIN
+
+	CREATE LOGIN RestaurantAddDeleteDb
+	WITH PASSWORD = 'P@ssword'
+
+	GRANT CREATE ANY DATABASE
+	TO RestaurantAddDeleteDb
+
+	GRANT ALTER ANY DATABASE
+	TO RestaurantAddDeleteDb
+
+END
 	
 /* e. Create a role/user that is called ‘RestaurantPower’ that can modify the rights/privileges
 of users in the Restaurant database.
 */
+
+IF NOT EXISTS (SELECT 1
+			   FROM sys.database_principals
+			   WHERE name = 'RestaurantPower')
+
+BEGIN
+
+	CREATE USER RestaurantPower
+	WITHOUT LOGIN
+
+	GRANT ALTER ANY USER
+	TO RestaurantPower
+
+END
+
+GO
 
 -- Deliverable 2 --
 
