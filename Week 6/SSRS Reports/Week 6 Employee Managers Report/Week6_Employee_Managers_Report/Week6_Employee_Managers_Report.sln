@@ -1,0 +1,30 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.37411.7 d17.14
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{F14B399A-7131-4C87-9E4B-1186C45EF12D}") = "Week6_Employee_Managers_Report", "Week6_Employee_Managers_Report\Week6_Employee_Managers_Report.rptproj", "{2711F958-756C-3EBC-E98B-37509558DEEA}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Default = Debug|Default
+		DebugLocal|Default = DebugLocal|Default
+		Release|Default = Release|Default
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2711F958-756C-3EBC-E98B-37509558DEEA}.Debug|Default.ActiveCfg = Debug
+		{2711F958-756C-3EBC-E98B-37509558DEEA}.Debug|Default.Build.0 = Debug
+		{2711F958-756C-3EBC-E98B-37509558DEEA}.Debug|Default.Deploy.0 = Debug
+		{2711F958-756C-3EBC-E98B-37509558DEEA}.DebugLocal|Default.ActiveCfg = DebugLocal
+		{2711F958-756C-3EBC-E98B-37509558DEEA}.DebugLocal|Default.Build.0 = DebugLocal
+		{2711F958-756C-3EBC-E98B-37509558DEEA}.Release|Default.ActiveCfg = Release
+		{2711F958-756C-3EBC-E98B-37509558DEEA}.Release|Default.Build.0 = Release
+		{2711F958-756C-3EBC-E98B-37509558DEEA}.Release|Default.Deploy.0 = Release
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {901AC8EE-2A94-41AC-B54D-F1295B337535}
+	EndGlobalSection
+EndGlobal
