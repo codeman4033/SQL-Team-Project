@@ -94,32 +94,59 @@ GO
 
 -- Cody Ferguson --
 
-/* For all five (5) stored procedures developed in Week 4 Deliverables, Item 1, perform the
-following actions. Generate the necessary SQL scripts for each action and save them to a folder
-on your VM desktop called ‘Week 7 sp Object Permissions */
+/* a. Assign 'execute' permissions to the object in Week 4 Deliverables, Item 1a, to schema 'dbo' */
 
-/* a. Assign ‘execute’ permissions to the object in Week 4 Deliverables, Item 1a, to schema
-‘dbo’ */
+GRANT EXECUTE
+ON OBJECT::dbo.spN_ChefDetails
+TO dbo;
+GO
 
 
-	
-/* b. Assign ‘View Definition’ permissions to the user ‘RestaurantUser’ to the stored
+/* b. Assign 'View Definition' permissions to the user 'RestaurantUser' to the stored
 procedure listed in Week 4 Deliverables, Item 1b. */
 
+GRANT VIEW DEFINITION
+ON OBJECT::dbo.spN_RecipeDetails
+TO RestaurantUser;
+GO
 
-	
-/* c. Assign ‘Alter’ permissions to the user ‘RestaurantAddDeleteDb’ to the stored procedure
-listed in Week 4 Deliverables, Item 1c. */
+
+/* c. Assign 'Alter' permissions to the user 'RestaurantAddDeleteDb' to the stored
+procedure listed in Week 4 Deliverables, Item 1c. */
+
+IF NOT EXISTS (
+    SELECT 1
+    FROM sys.database_principals
+    WHERE name = 'RestaurantAddDeleteDb'
+)
+BEGIN
+    CREATE USER RestaurantAddDeleteDb
+    FOR LOGIN RestaurantAddDeleteDb;
+END;
+GO
+
+GRANT ALTER
+ON OBJECT::dbo.spN_RecipeIngredients
+TO RestaurantAddDeleteDb;
+GO
 
 
-	
-/* d. Assign ‘Take Ownership’ permissions to the user ‘RestaurantPower’ to the stored
+/* d. Assign 'Take Ownership' permissions to the user 'RestaurantPower' to the stored
 procedure listed in Week 4 Deliverables, Item 1d. */
 
+GRANT TAKE OWNERSHIP
+ON OBJECT::dbo.spN_KitchenDetails
+TO RestaurantPower;
+GO
 
-	
-/* e. Assign ‘Control’ permission to the user RestaurantDoAnything’ to the stored procedure
-listed in Week 4 Deliverables, Item 1e. */
+
+/* e. Assign 'Control' permission to the user 'RestaurantDoAnything' to the stored
+procedure listed in Week 4 Deliverables, Item 1e. */
+
+GRANT CONTROL
+ON OBJECT::dbo.spN_CustomerDetails
+TO RestaurantDoAnything;
+GO
 
 -- Deliverable 3 --
 
