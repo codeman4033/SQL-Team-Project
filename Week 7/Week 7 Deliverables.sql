@@ -175,9 +175,14 @@ here]_table_user; permissions: db_datawriter */
 /* d. Table: Table name used for item b in Week 2 Deliverables; user/role: [table name
 here]_table_user; permissions: db_accessadmin */
 
-
+create login employee_table_user with password = 'password';
+create user employee_table_user;
+alter role [db_accessadmin] add member employee_table_user;
 
 /* e. Table: Table name used for item p in Week 2 Deliverables; user/role: [table name
 here]_table_user; permissions: db_datareader, db_datawriter */
 
-
+create login reservation_table_user with password = 'password';
+create user reservation_table_user;
+alter role db_datareader add member reservation_table_user;
+alter role db_datawriter add member reservation_table_user;
