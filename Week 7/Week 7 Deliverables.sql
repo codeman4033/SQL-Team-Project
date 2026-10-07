@@ -170,18 +170,50 @@ to that user/role */
 here]_table_user; permissions: db_datareader */
 /* i. For example, if that table was named Recipes, the role would be called
 recipe_table_user. */
-
-
-
+-- Create the MenuItem user
+CREATE USER menuitem_table_user WITHOUT LOGIN;
+GO
+-- Assign db_datareader role
+ALTER ROLE db_datareader
+ADD MEMBER menuitem_table_user;
+GO
+--Test
+SELECT
+    USER_NAME(member_principal_id) AS UserName,
+    USER_NAME(role_principal_id) AS RoleName
+FROM sys.database_role_members
+WHERE USER_NAME(member_principal_id) = 'menuitem_table_user';
+GO
 /* b. Table: Table name used for item l in Week 2 Deliverables; user/role: [table name
 here]_table_user; permissions: guest */
-
-
+-- Create Recipe user
+CREATE USER recipe_table_user WITHOUT LOGIN;
+GO
+--TEST
+SELECT
+    name AS UserName,
+    type_desc AS UserType
+FROM sys.database_principals
+WHERE name = 'recipe_table_user';
 	
 /* c. Table: Table name used for item o in Week 2 Deliverables; user/role: [table name
 here]_table_user; permissions: db_datawriter */
 
+-- C: Create ServerTableAssignment user
+CREATE USER servertableassignment_table_user WITHOUT LOGIN;
+GO
 
+-- Assign db_datawriter role
+ALTER ROLE db_datawriter
+ADD MEMBER servertableassignment_table_user;
+GO
+-- Test C
+SELECT
+    USER_NAME(member_principal_id) AS UserName,
+    USER_NAME(role_principal_id) AS RoleName
+FROM sys.database_role_members
+WHERE USER_NAME(member_principal_id) =
+      'servertableassignment_table_user';
 	
 /* d. Table: Table name used for item b in Week 2 Deliverables; user/role: [table name
 here]_table_user; permissions: db_accessadmin */
